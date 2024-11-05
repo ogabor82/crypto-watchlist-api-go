@@ -1,19 +1,17 @@
 package main
 
 import (
+	"crypto-watchlist-api/routes"
 	"fmt"
 	"net/http"
 )
 
-func sampleHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "hello world")
-}
-
 func main() {
 	fmt.Println("Crypto Watchlist API Server Started")
 
-	// Register the /sample endpoint
-	http.HandleFunc("/sample", sampleHandler)
+	// Setup routes
+	routes.SetupUserRoutes()
+	routes.SetupSampleRoutes()
 
 	// Start the server on port 8080
 	fmt.Println("Server is running on http://localhost:8080")
