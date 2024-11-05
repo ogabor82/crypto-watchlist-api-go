@@ -3,6 +3,8 @@ package models
 import (
 	"crypto-watchlist-api/db"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type User struct {
@@ -14,8 +16,8 @@ type User struct {
 }
 
 func CreateUser(email, password, name string) (*User, error) {
-	// Generate a simple ID (in real app, use UUID or similar)
-	id := "user_" + email
+	// Generate UUID for the user
+	id := uuid.New().String()
 
 	// Insert user into database
 	query := `
