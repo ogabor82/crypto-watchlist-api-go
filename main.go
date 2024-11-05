@@ -1,13 +1,22 @@
 package main
 
 import (
+	"crypto-watchlist-api/db"
 	"crypto-watchlist-api/routes"
 	"fmt"
+	"log"
 	"net/http"
 )
 
 func main() {
 	fmt.Println("Crypto Watchlist API Server Started")
+
+	// Initialize database
+	err := db.InitDB()
+	if err != nil {
+		log.Fatalf("Error initializing database: %v", err)
+	}
+	fmt.Println("Database initialized successfully")
 
 	// Setup routes
 	routes.SetupUserRoutes()

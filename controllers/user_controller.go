@@ -64,8 +64,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// For now, just return a success message
-	// In a real app, you would verify credentials against a database
+	user, err := models.GetUserByEmail(req.Email)
+	if err != nil {
+		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		return
+	}
+
+	// In a real app, you would compare hashed passwords
+	if user.Password != req.Password {
+		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
+		return
+	}
+
+	response := UserResponse{
+		ID:    user.ID,
+		Email: user.Email,
+		Name:  user.Name,
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	w.Write([]byte(`{"message": "Login successful"}`))
+	json.NewEncoder(w).Encode(response)
 }
