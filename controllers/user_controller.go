@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"crypto-watchlist-api/models"
+	"crypto-watchlist-api/utils"
 )
 
 type SignupRequest struct {
@@ -23,6 +24,7 @@ type UserResponse struct {
 	ID    string `json:"id"`
 	Email string `json:"email"`
 	Name  string `json:"name"`
+	Token string `json:"token"`
 }
 
 func SignupHandler(w http.ResponseWriter, r *http.Request) {
@@ -73,10 +75,18 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Generate JWT token
+	token, err := utils.GenerateToken(user.ID, user.Email)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+
 	response := UserResponse{
 		ID:    user.ID,
 		Email: user.Email,
 		Name:  user.Name,
+		Token: token,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -109,10 +119,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Generate JWT token
+	token, err := utils.GenerateToken(user.ID, user.Email)
+	if err != nil {
+		http.Error(w, "Error generating token", http.StatusInternalServerError)
+		return
+	}
+
 	response := UserResponse{
 		ID:    user.ID,
 		Email: user.Email,
 		Name:  user.Name,
+		Token: token,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
