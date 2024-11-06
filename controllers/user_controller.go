@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 
 	"crypto-watchlist-api/models"
 )
@@ -36,6 +37,36 @@ func SignupHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Validate email format
+	req.Email = strings.TrimSpace(req.Email)
+	if req.Email == "" {
+		http.Error(w, "Email is required", http.StatusBadRequest)
+		return
+	}
+	if !strings.Contains(req.Email, "@") || !strings.Contains(req.Email, ".") {
+		http.Error(w, "Invalid email format", http.StatusBadRequest)
+		return
+	}
+
+	// Check if email already exists
+	existingUser, err := models.GetUserByEmail(req.Email)
+	if err == nil && existingUser != nil {
+		http.Error(w, "Email already registered", http.StatusConflict)
+		return
+	}
+
+	// Validate password
+	req.Password = strings.TrimSpace(req.Password)
+	if req.Password == "" {
+		http.Error(w, "Password is required", http.StatusBadRequest)
+		return
+	}
+	if len(req.Password) < 6 {
+		http.Error(w, "Password must be at least 6 characters long", http.StatusBadRequest)
+		return
+	}
+
+	// Create user
 	user, err := models.CreateUser(req.Email, req.Password, req.Name)
 	if err != nil {
 		http.Error(w, "Error creating user", http.StatusInternalServerError)
