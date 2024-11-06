@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -22,9 +25,20 @@ func main() {
 	routes.SetupUserRoutes()
 	routes.SetupSampleRoutes()
 
-	// Start the server on port 8080
-	fmt.Println("Server is running on http://localhost:8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Printf("Warning: .env file not found")
+	}
+
+	// Get PORT from environment variable, default to 8080 if not set
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8080"
+	}
+
+	// Start the server using PORT from env
+	fmt.Printf("Server is running on http://localhost:%s\n", port)
+	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		fmt.Printf("Error starting server: %v\n", err)
 	}
 }
