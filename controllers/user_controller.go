@@ -103,14 +103,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := models.GetUserByEmail(req.Email)
+	user, err := models.VerifyCredentials(req.Email, req.Password)
 	if err != nil {
-		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
-		return
-	}
-
-	// In a real app, you would compare hashed passwords
-	if user.Password != req.Password {
 		http.Error(w, "Invalid credentials", http.StatusUnauthorized)
 		return
 	}
